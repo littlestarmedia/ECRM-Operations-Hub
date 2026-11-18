@@ -1,4 +1,3 @@
-Yes. Here it is as standard Markdown, ready to copy and paste into Claude Code:
 
 ## Update the ECRM Operations overview and H2 work plan
 
