@@ -13,9 +13,10 @@ A hub for running and planning the ECRM team's work, for Caroline. It should sup
 - tracking and planning **BAU**, **CEP**, **Deliverability** and **SCRAM** work
 - managing actions, priorities, blockers, decisions and expected benefits across that work
 
-As of 2026-11-18, this repository is **documentation and planning only** — no application
-has been built here. *(To confirm: whether/when that changes, and what it would need to
-cover.)*
+As of 2026-11-18 a working MVP exists on the `ecrm-planning-tool` branch: Node/Express +
+Postgres, email/password sign-in, an editable work-item board, and the process/ownership/
+meetings views. Not deployed, not merged, not yet pointed at a shared database — see
+[`README.md`](README.md) for what's built and what still needs a decision.
 
 ## Standards (follow these)
 

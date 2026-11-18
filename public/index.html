@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ECRM Operations Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ds.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="ds-page-wash">
+
+<!-- ================= SIGN IN ================= -->
+<div id="login-screen" class="login-wrap">
+  <form id="login-form" class="ds-card pad login-card">
+    <h1 class="text-headline-small-emphasized" style="margin:0 0 4px">ECRM Operations Hub</h1>
+    <p class="muted text-body-medium" style="margin:0 0 var(--space-5)">Sign in to view and edit the team's plan.</p>
+    <label class="ds-field ds-field--filled" style="width:100%">
+      <span class="ds-field__label text-label-large">Email</span>
+      <span class="ds-field__box"><input class="ds-field__input" id="login-email" type="email" autocomplete="username" required></span>
+    </label>
+    <label class="ds-field ds-field--filled" style="width:100%;margin-top:var(--space-3)">
+      <span class="ds-field__label text-label-large">Password</span>
+      <span class="ds-field__box"><input class="ds-field__input" id="login-password" type="password" autocomplete="current-password" required></span>
+    </label>
+    <p id="login-error" class="text-body-small" style="color:var(--color-error);min-height:18px;margin:var(--space-2) 0 0"></p>
+    <button class="ds-btn ds-btn--filled ds-btn--md" type="submit" style="width:100%;margin-top:var(--space-3)">Sign in</button>
+    <p class="muted text-body-small" style="margin-top:var(--space-4)">No self-serve sign-up. Ask whoever administers this tool for an account.</p>
+  </form>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" hidden>
+<header class="topbar ds-sticky-glass">
+  <div class="wrap">
+    <div class="grow"><div class="text-title-medium-emphasized">ECRM Operations Hub</div></div>
+    <span class="ds-badge sm" data-tone="info" id="data-mode-badge"><span class="ds-badge__dot"></span>Shared data — signed in</span>
+    <span class="text-body-small muted" id="whoami"></span>
+    <button class="ds-btn ds-btn--text ds-btn--sm" id="logout-btn" type="button">Sign out</button>
+    <button id="ds-theme-toggle" aria-label="Toggle light or dark theme"><i data-lucide="moon"></i></button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<nav class="sub-jump" aria-label="Views" id="view-nav">
+  <a href="#overview" data-view="overview"><i data-lucide="layout-dashboard"></i>Overview</a>
+  <a href="#board" data-view="board"><i data-lucide="kanban-square"></i>Work plan</a>
+  <a href="#process" data-view="process"><i data-lucide="workflow"></i>Process</a>
+  <a href="#upcoming" data-view="upcoming"><i data-lucide="list-ordered"></i>Upcoming work</a>
+  <a href="#meetings" data-view="meetings"><i data-lucide="calendar-days"></i>Team meetings</a>
+  <a href="#rob" data-view="rob"><i data-lucide="flag"></i>For Rob</a>
+</nav>
+
+<!-- ---------- OVERVIEW ---------- -->
+<section class="view" id="view-overview">
+  <h2 class="ds-section-title text-headline-small-emphasized">Team overview</h2>
+  <p class="lede muted text-body-medium ds-prose">Priority actions, what's overdue or coming up, what's blocked, and decisions waiting on someone.</p>
+  <div class="grid g2">
+    <div class="ds-card pad">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="target"></i></span><h3 class="text-title-large-emphasized">Priority actions</h3></div>
+      <div id="ov-priority"></div>
+    </div>
+    <div class="ds-card pad">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="gavel"></i></span><h3 class="text-title-large-emphasized">Decisions needed</h3></div>
+      <div id="ov-decisions"></div>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:var(--space-4)">
+    <div class="ds-card pad ds-summary-card" data-tone="warning">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="alarm-clock"></i></span><h3 class="text-title-large-emphasized">Overdue / upcoming</h3></div>
+      <div id="ov-dates"></div>
+    </div>
+    <div class="ds-card pad ds-summary-card" data-tone="danger">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="octagon-pause"></i></span><h3 class="text-title-large-emphasized">Blocked</h3></div>
+      <div id="ov-blocked"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ---------- WORK PLAN BOARD ---------- -->
+<section class="view" id="view-board" hidden>
+  <h2 class="ds-section-title text-headline-small-emphasized">Work plan</h2>
+  <p class="lede muted text-body-medium ds-prose">Every action and piece of work. Drag a card between columns, or use the list view to edit in a table. Add, edit and reorder freely — changes save straight away for everyone.</p>
+  <div class="toolbar ds-card no-print" id="board-toolbar">
+    <div class="ds-segmented" role="group" aria-label="Board or list"><div class="ds-segmented__track" id="view-mode"></div></div>
+    <label class="ds-select"><span class="ds-select__label">Owner:</span><select class="ds-select__input" id="f-owner"></select><span class="ds-select__chevron"><i data-lucide="chevron-down"></i></span></label>
+    <label class="ds-select"><span class="ds-select__label">Area:</span><select class="ds-select__input" id="f-area"></select><span class="ds-select__chevron"><i data-lucide="chevron-down"></i></span></label>
+    <label class="ds-select"><span class="ds-select__label">Priority:</span><select class="ds-select__input" id="f-priority"></select><span class="ds-select__chevron"><i data-lucide="chevron-down"></i></span></label>
+    <span class="spacer"></span>
+    <button class="ds-btn ds-btn--filled ds-btn--sm" id="add-item-btn" type="button"><span class="ds-btn__icon"><i data-lucide="plus"></i></span>Add work item</button>
+  </div>
+  <div id="board-view"><div class="board" id="board"></div></div>
+  <div id="list-view" hidden class="ds-card tbl-card"><div class="ds-table-wrap"><table class="ds-table" id="list-table"></table></div></div>
+</section>
+
+<!-- ---------- PROCESS ---------- -->
+<section class="view" id="view-process" hidden>
+  <h2 class="ds-section-title text-headline-small-emphasized">1. SCRAM: where the MVP stands</h2>
+  <p class="lede muted text-body-medium ds-prose">SCRAM runs bulk SMS, but as an MVP built and held by Engineering. ECRM has lost the control it had on VooDoo: it can no longer see, test or adjust who receives each send.</p>
+  <div class="sc-grid">
+    <div class="ds-card pad">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="cpu"></i></span><h3 class="text-title-large-emphasized">What the MVP does today</h3></div>
+      <div id="sc-now"></div>
+    </div>
+    <div class="ds-card pad ds-summary-card" data-tone="danger">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="triangle-alert"></i></span><h3 class="text-title-large-emphasized">Issues Simon raised</h3></div>
+      <div id="sc-issues"></div>
+    </div>
+    <div class="ds-card pad ds-summary-card" data-tone="info">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="flag"></i></span><h3 class="text-title-large-emphasized">Where it needs to get to</h3></div>
+      <div id="sc-next"></div>
+    </div>
+  </div>
+
+  <h2 class="ds-section-title text-headline-small-emphasized" style="margin-top:var(--space-7)">2. Who owns what: now and in future</h2>
+  <p class="lede muted text-body-medium ds-prose">The distinction between ECRM campaign planning and requirements, Engineering's SCRAM audience rules and queries, campaign build/QA/scheduling/deployment, and the teams responsible for data, platforms, commercial approvals and compliance decisions.</p>
+  <div class="toolbar ds-card no-print">
+    <div class="ds-segmented" role="group" aria-label="Filter by change"><div class="ds-segmented__track" id="own-filter"></div></div>
+  </div>
+  <div class="ds-card tbl-card"><div class="ds-table-wrap"><table class="ds-table" id="own-t"></table></div></div>
+
+  <h2 class="ds-section-title text-headline-small-emphasized" style="margin-top:var(--space-7)">3. End-to-end process: plan to review</h2>
+  <p class="lede muted text-body-medium ds-prose">Seven stages, start to finish. Each shows what happens, who does it now, who else is involved, the technology, what passes to the next stage, and the gaps or decisions that affect it.</p>
+  <div class="strip" id="strip"></div>
+  <div id="stages"></div>
+
+  <h2 class="ds-section-title text-headline-small-emphasized" style="margin-top:var(--space-7)">4. Danny's breakdown</h2>
+  <p class="lede muted text-body-medium ds-prose">His IT Operations and InfoSec work continues. For work he says sits with another function, owners are shown as agreed, proposed, or still to agree — a proposed handover is never shown as settled unless it is.</p>
+  <div class="grid g2">
+    <div class="ds-card pad ds-summary-card" data-tone="success">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="shield-check"></i></span><h3 class="text-title-large-emphasized">IT Operations and InfoSec work he covers</h3></div>
+      <div id="d-it"></div>
+    </div>
+    <div class="ds-card pad ds-summary-card" data-tone="warning">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="arrow-right-left"></i></span><div><h3 class="text-title-large-emphasized">Danny says this sits with another function</h3></div></div>
+      <div id="d-else"></div>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:var(--space-4)">
+    <div class="ds-card pad">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="clock"></i></span><h3 class="text-title-large-emphasized">Current cover and open needs</h3></div>
+      <div id="d-cover"></div>
+    </div>
+    <div class="ds-card pad">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="layers"></i></span><h3 class="text-title-large-emphasized">Capacity and prioritisation</h3></div>
+      <p class="text-body-medium" style="margin:0 0 var(--space-3)">Danny's BAU and project work competes with wider IT, delivery and security commitments. These items go through PMO / WOB / BOB with Omar and need prioritising against that whole queue, not inside ECRM:</p>
+      <div class="ds-table-wrap"><table class="ds-table" id="d-pmo" style="min-width:0"></table></div>
+    </div>
+  </div>
+
+  <div class="ds-card pad" style="margin-top:var(--space-7)">
+    <h3 class="text-title-large-emphasized" style="margin-top:0">To confirm</h3>
+    <ul class="tight text-body-medium ds-prose" id="tc"></ul>
+  </div>
+</section>
+
+<!-- ---------- UPCOMING WORK ---------- -->
+<section class="view" id="view-upcoming" hidden>
+  <h2 class="ds-section-title text-headline-small-emphasized">Upcoming work: BAU, CEP, deliverability, SCRAM and commercial improvement</h2>
+  <p class="lede muted text-body-medium ds-prose">What's expected to be achieved, dependencies, and whether the commercial benefit is evidenced or still needs validating. Nothing here has an invented uplift figure — where none exists, it says so.</p>
+  <label class="ds-select" style="margin-bottom:var(--space-4)"><span class="ds-select__label">Area:</span><select class="ds-select__input" id="up-area"><option value="">All</option></select><span class="ds-select__chevron"><i data-lucide="chevron-down"></i></span></label>
+  <div id="upcoming-groups"></div>
+</section>
+
+<!-- ---------- MEETINGS ---------- -->
+<section class="view" id="view-meetings" hidden>
+  <h2 class="ds-section-title text-headline-small-emphasized">Team meetings</h2>
+  <p class="lede muted text-body-medium ds-prose">A proposed move from one weekly meeting to two: one on performance and commercial results, one on operations, delivery and planned work. Owners and attendees to agree. "To confirm" means the data or reporting is not confirmed as available today.</p>
+  <div class="grid g2" id="meetings"></div>
+</section>
+
+<!-- ---------- FOR ROB ---------- -->
+<section class="view" id="view-rob" hidden>
+  <div class="hero ds-surface-dark">
+    <h1 class="text-headline-large-emphasized">What Rob needs to know</h1>
+    <p class="text-body-large">Key priorities, material risks and decisions needed — kept short on purpose.</p>
+  </div>
+  <div class="grid g2">
+    <div class="ds-card pad">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="target"></i></span><h3 class="text-title-large-emphasized">Key priorities</h3></div>
+      <div id="rob-priority"></div>
+    </div>
+    <div class="ds-card pad ds-summary-card" data-tone="danger">
+      <div class="card-h"><span class="ds-icon-tile"><i data-lucide="triangle-alert"></i></span><h3 class="text-title-large-emphasized">Material risks</h3></div>
+      <div id="rob-risks"></div>
+    </div>
+  </div>
+  <div class="ds-card pad" style="margin-top:var(--space-4)">
+    <div class="card-h"><span class="ds-icon-tile"><i data-lucide="gavel"></i></span><h3 class="text-title-large-emphasized">Decisions needed</h3></div>
+    <div class="ds-table-wrap"><table class="ds-table" id="rob-dec-t" style="min-width:0"></table></div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ---------- WORK ITEM DRAWER ---------- -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer ds-card" id="item-drawer" aria-label="Edit work item">
+  <div class="row" style="justify-content:space-between;margin-bottom:var(--space-4)">
+    <h3 class="text-title-large-emphasized" id="drawer-title" style="margin:0">Work item</h3>
+    <button class="icon-btn" id="drawer-close" type="button" aria-label="Close"><i data-lucide="x"></i></button>
+  </div>
+  <form id="item-form">
+    <dl>
+      <div><dt>Title</dt><dd><label class="ds-field ds-field--filled" style="width:100%"><span class="ds-field__box"><input class="ds-field__input" id="f-title" required></span></label></dd></div>
+      <div><dt>Work area</dt><dd><label class="ds-select" style="width:100%"><select class="ds-select__input" id="f-area-edit" style="width:100%"></select><span class="ds-select__chevron"><i data-lucide="chevron-down"></i></span></label></dd></div>
+      <div><dt>Owner</dt><dd><label class="ds-field ds-field--filled" style="width:100%"><span class="ds-field__box"><input class="ds-field__input" id="f-owner-edit" placeholder="To confirm"></span></label></dd></div>
+      <div><dt>Status</dt><dd><label class="ds-select" style="width:100%"><select class="ds-select__input" id="f-status-edit" style="width:100%"></select><span class="ds-select__chevron"><i data-lucide="chevron-down"></i></span></label></dd></div>
+      <div><dt>Priority</dt><dd><label class="ds-field ds-field--filled" style="width:100%"><span class="ds-field__box"><input class="ds-field__input" id="f-priority-edit" placeholder="To confirm"></span></label></dd></div>
+      <div><dt>Due / review date</dt><dd><label class="ds-field ds-field--filled" style="width:100%"><span class="ds-field__box"><input class="ds-field__input" type="date" id="f-due"></span></label></dd></div>
+      <div><dt>Next action</dt><dd><textarea class="ds-textarea" id="f-next"></textarea></dd></div>
+      <div><dt>Dependencies</dt><dd><textarea class="ds-textarea" id="f-deps"></textarea></dd></div>
+      <div><dt>Relevant technology</dt><dd><label class="ds-field ds-field--filled" style="width:100%"><span class="ds-field__box"><input class="ds-field__input" id="f-tech"></span></label></dd></div>
+      <div><dt>Expected result or benefit</dt><dd><textarea class="ds-textarea" id="f-benefit"></textarea></dd></div>
+      <div><dt>Blocker</dt><dd><textarea class="ds-textarea" id="f-blocker"></textarea></dd></div>
+      <div><dt>Source / context</dt><dd><textarea class="ds-textarea" id="f-source"></textarea></dd></div>
+    </dl>
+    <div class="row" style="justify-content:space-between;margin-top:var(--space-5)">
+      <button class="ds-btn ds-btn--destructive ds-btn--sm" id="delete-item-btn" type="button">Delete</button>
+      <div class="row">
+        <button class="ds-btn ds-btn--text ds-btn--sm" id="cancel-item-btn" type="button">Cancel</button>
+        <button class="ds-btn ds-btn--filled ds-btn--sm" type="submit">Save</button>
+      </div>
+    </div>
+  </form>
+</aside>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
