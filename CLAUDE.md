@@ -1,68 +1,63 @@
-# Commercial Forecast Dashboard — Agent Brief
+# ECRM Operations Hub — Agent Brief
 
-> Persistent brief (Prickles **AI2**). Pointers, not snippets. Keep under ~200 lines.
-> If something here is wrong on `main`, every session is wrong — treat this file as code.
+> Persistent brief. Pointers, not snippets. Keep under ~200 lines.
+> If something here is wrong, fix it in the same change that found the problem — every
+> future session starts from this file, so an uncorrected error here repeats.
 
 ## What this is
 
-An internal FY26/27 commercial revenue & commission forecast dashboard for Little Star
-Media, for senior-management review. Confidential data (per-operator budgets, commission,
-named account managers, relationship notes). Small user base.
+A hub for running and planning the ECRM team's work, for Caroline. It should support:
 
-Today it is a Vite + React SPA that reads Excel files in the browser. We are migrating it
-to a proper hosted app with a database, real auth, and a deploy pipeline. See
-[`docs/plan/`](docs/plan/).
+- understanding current ECRM processes, owners and technology *(To confirm: which
+  processes, tools and owners this hub is meant to cover)*
+- tracking and planning **BAU**, **CEP**, **Deliverability** and **SCRAM** work
+- managing actions, priorities, blockers, decisions and expected benefits across that work
+
+As of 2026-11-18 a working MVP exists on the `ecrm-planning-tool` branch: Node/Express +
+Postgres, email/password sign-in, an editable work-item board, and the process/ownership/
+meetings views. Not deployed, not merged, not yet pointed at a shared database — see
+[`README.md`](README.md) for what's built and what still needs a decision.
 
 ## Standards (follow these)
 
-- **Prickles canon** — the rules in [`.claude/rules/`](.claude/rules/) are authoritative.
-  Read the relevant pillar before working (Types & Schema for the DB, AI Collaboration for
-  process, Testing for tests). Canonical source: https://prickles.org
-- **Project standards** — [`docs/standards/`](docs/standards/).
-- Author drafts, human approves and edits last (**AI6**). This file and every doc/schema
-  under `docs/` is a draft until a human signs off (**AI1**).
+- **Documentation and planning standards** — [`docs/standards/README.md`](docs/standards/README.md).
+  Read it before writing or restructuring anything here.
+- **Issue reporting** — [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/): a bug report
+  template and a work request template. Use them rather than raising work informally.
+- Author drafts; a human (Caroline, unless told otherwise) approves before anything here
+  counts as settled. This file and everything under `docs/` is a draft until approved.
 
-## Locked decisions
+## Hard constraints
 
-| Area | Decision |
-|---|---|
-| Hosting | Vercel (`forecast.lsmnetwork.com`, already pointed at Vercel) |
-| Database | Neon Postgres, **free tier** |
-| ORM | **Drizzle** — schema-as-code in the repo (**T4 Schema Sovereignty**) |
-| Language | **TypeScript strict** for all new code (**T1/T2**); React app migrated incrementally |
-| Schema | Normalised to **4NF** — see [`docs/plan/02-schema-4nf.md`](docs/plan/02-schema-4nf.md) |
-| Auth | Own `users` table in Neon; password hashing via Node built-in `crypto` (scrypt); server-side session cookies. **No third-party auth service.** |
-| Secrets | **AWS Secrets Manager** is the source of truth. Never commit secrets. |
-
-## Hard constraints (non-negotiable)
-
-- **No third-party service dependencies for simple needs.** No Clerk/Auth0/Supabase-auth
-  etc. If the standard library or Postgres can do it, use those.
-- **Verify before you build** (**AI5**) — check live docs/source, don't rely on training.
-  Pricing, tiers, and APIs change; confirm them.
-- **Confidential data never ships to the client unprotected.** No spreadsheets in `public/`,
-  no secrets inlined into the bundle (the old `VITE_DASHBOARD_PASSWORD`/`LSM123` gate was
-  exactly this mistake — being removed).
-- **Plan → approve → execute → review** (**AI1**). No code before an approved plan.
+- **Do not invent.** No owners, processes, dates, decisions or financial/benefit estimates
+  that aren't already stated in this repo or given directly by Caroline. Write **"To
+  confirm"** instead of a plausible-sounding guess.
+- **Confidential by default.** ECRM operational data — performance, campaign, team and
+  commercial detail — should be treated as confidential unless told otherwise. *(To
+  confirm: specific handling rules, access restrictions, and anything required for personal
+  data.)*
+- **Plan → approve → execute → review.** For any non-trivial change: say what you're about
+  to do and how it will be checked, get sign-off, make the change in a small reviewable
+  step, then check the result against the plan before calling it done.
 
 ## How we work
 
-- Short-lived branches, reviewed before merge (**P7**).
-- Tests are the brief; write them first (**P1**), test against real dependencies — a real
-  Postgres/Neon branch, not mocks (**TS4**).
-- Local dev must run and pass fully before anything is pushed. See the plan.
+- Short-lived branches; nothing merges to `main` without review.
+- Verify, don't assume — if a fact isn't confirmed in this repo or by Caroline directly,
+  mark it "To confirm" rather than inferring it from what seems likely.
+- Keep documents practical and focused. Don't build application functionality as part of a
+  documentation or planning change, and don't expand a doc's scope beyond what was asked.
+
+## Reference material
+
+[`reference/commercial-dashboard/`](reference/commercial-dashboard/) holds read-only
+example material from another Little Star Media project. It's useful for *structure*
+(how that project organised its docs and agent instructions) — not for *content*. None of
+its forecasting detail, tech stack, hosting, database or deployment decisions apply to
+ECRM. Don't edit it; don't copy it in as ECRM fact.
 
 ## Pointers
 
-- **Working here as an agent — read first:** [`docs/standards/agent-guide.md`](docs/standards/agent-guide.md)
-- **Setup, running locally, testing, deploying:** [`docs/standards/development.md`](docs/standards/development.md).
-  `--env-file` loses to exported shell variables; `import` and `seed` delete rows with no host
-  guard. Confirm what `DATABASE_URL` resolves to before any command that writes.
-- **Any schema change:** [`docs/standards/database-changes.md`](docs/standards/database-changes.md).
-  Migrations are generated, never hand-written; they run in CI from `main` and nowhere else;
-  destructive ones ship separately from the code change. Never ask for a production connection string.
-- Plan & roadmap: [`docs/plan/01-architecture-and-migration.md`](docs/plan/01-architecture-and-migration.md)
-  — a target, not a description; check the code before relying on it.
-- 4NF schema: [`docs/plan/02-schema-4nf.md`](docs/plan/02-schema-4nf.md)
-- Standards: [`docs/standards/README.md`](docs/standards/README.md)
-- Current data shape lives in the parsers being replaced: `src/utils/parseWorkbook.js`, `src/utils/parseYTD.js`.
+- Documentation & planning standards: [`docs/standards/README.md`](docs/standards/README.md)
+- Report a bug or raise a work request: [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/)
+- Project overview: [`README.md`](README.md)

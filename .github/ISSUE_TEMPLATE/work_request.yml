@@ -1,0 +1,57 @@
+name: Work request
+description: New ECRM work to plan in, or a change to work already planned.
+title: "[Work request]: "
+labels: ["work-request"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What's being requested
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - BAU
+        - CEP
+        - Deliverability
+        - SCRAM
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Expected benefit
+      description: Why this matters. Write "To confirm" if not yet agreed or estimated.
+    validations:
+      required: false
+  - type: textarea
+    id: blockers
+    attributes:
+      label: Blockers / dependencies
+    validations:
+      required: false
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision needed
+      description: What needs deciding, and by whom, before this can move.
+    validations:
+      required: false
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      description: Who's driving this. Write "To confirm" if not yet assigned.
+    validations:
+      required: false
+  - type: input
+    id: priority
+    attributes:
+      label: Priority
+      description: Relative priority. Write "To confirm" if no scale is agreed yet.
+    validations:
+      required: false
